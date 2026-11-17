@@ -37,8 +37,10 @@ class ReportingTests(TestCase):
 
     def test_xlsx_has_numeric_totals_and_breakdown(self):
         book = load_workbook(BytesIO(export_batch_xlsx(self.batch)))
-        self.assertEqual(book["Resultados_Lineas"]["J2"].data_type, "n")
-        self.assertEqual(book["Totales_recalada"].cell(7, 5).value, 23158.24)
+        self.assertEqual(book["Resultados_Lineas"]["J2"].value, "=ROUND(G2*I2,2)")
+        self.assertEqual(book["Totales_recalada"]["E7"].value, "=ROUND(SUM(E2:E6),2)")
+        self.assertEqual(book["Totales_recalada"]["F2"].number_format, "0%")
+        self.assertIn("SUMIFS", book["Fecha_turno_cuadrilla"]["G2"].value)
         self.assertIn("Fecha_turno_cuadrilla", book.sheetnames)
 
     def test_warehouse_front_is_general_for_nonstandard_task(self):
