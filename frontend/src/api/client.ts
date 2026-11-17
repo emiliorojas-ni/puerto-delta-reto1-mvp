@@ -3,6 +3,7 @@ import { ApiError, toApiError } from './errors'
 import type {
   Api,
   CallDetail,
+  CallHistoryList,
   CallId,
   PartDetail,
   PartsList,
@@ -76,6 +77,9 @@ export class HttpApi implements Api {
   }
   getSummary() {
     return this.request<Summary>('GET', '/summary')
+  }
+  listCalls() {
+    return this.request<CallHistoryList>('GET', '/calls')
   }
   getCall(id: CallId) {
     return this.request<CallDetail>('GET', `/calls/${encodeURIComponent(id)}`)

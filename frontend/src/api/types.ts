@@ -51,6 +51,20 @@ export interface CallSummary {
   piecework_lines: number
 }
 
+export type CallOperationalStatus = 'activa' | 'finalizada'
+
+export interface CallHistoryItem extends CallSummary {
+  batch_id: number
+  batch_imported_at: LocalDateTime
+  is_current_batch: boolean
+  operational_status: CallOperationalStatus
+}
+
+export interface CallHistoryList {
+  results: CallHistoryItem[]
+  count: number
+}
+
 export interface SsggSummary {
   jornales: DecimalStr
   jornal_usd: Money
@@ -151,6 +165,21 @@ export interface CallDetail {
   suggested_parts: PartSummary[]
   piecework: Piecework[]
   totals: { jornal_usd: Money; destajo_usd: Money; total_usd: Money }
+  breakdown?: CostBreakdown[]
+}
+
+export interface CostBreakdown {
+  destination: string
+  fecha: string
+  turno: string
+  cuadrilla: string
+  workers_called: string[]
+  jornales: string
+  jornal_usd: Money
+  destajo_usd: Money
+  total_usd: Money
+  jornal_details: { ref: string; tarea: string; personas: number; jornales: string; tarifa_usd: Money; amount_usd: Money; status: PartStatus }[]
+  destajo_details: { ref: string; concepto: string; personas: number; toneladas: string; tarifa_usd: Money; amount_usd: Money }[]
 }
 
 export interface PartsList {
@@ -221,6 +250,7 @@ export interface Api {
   login(username: string, password: string): Promise<Session>
   logout(): Promise<Session>
   getSummary(): Promise<Summary>
+  listCalls(): Promise<CallHistoryList>
   getCall(id: CallId): Promise<CallDetail>
   listParts(query?: PartsQuery): Promise<PartsList>
   getPart(id: number): Promise<PartDetail>

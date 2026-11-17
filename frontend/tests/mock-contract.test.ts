@@ -33,6 +33,11 @@ describe('MockApi contract v1 parity & control reconciliation', () => {
     expect(summary.control.difference_usd).toBe('0.00')
     expect(summary.control.ok).toBe(true)
 
+    const history = await api.listCalls()
+    expect(history.count).toBeGreaterThan(summary.calls.length)
+    expect(history.results.some((call) => call.operational_status === 'activa')).toBe(true)
+    expect(history.results.some((call) => call.operational_status === 'finalizada')).toBe(true)
+
     // Suma de subtotales de recaladas + REC-SSGG + pendiente = total del período
     const callsTotal = addMoney(...summary.calls.map((c) => c.total_usd))
     const grandTotal = addMoney(callsTotal, summary.ssgg.jornal_usd, summary.pending.jornal_usd)

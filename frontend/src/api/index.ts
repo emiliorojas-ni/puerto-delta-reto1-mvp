@@ -56,6 +56,9 @@ export const api: Api = {
   getSummary() {
     return (activeMode === 'mock' ? mockApi : httpApi).getSummary()
   },
+  listCalls() {
+    return (activeMode === 'mock' ? mockApi : httpApi).listCalls()
+  },
   getCall(id) {
     return (activeMode === 'mock' ? mockApi : httpApi).getCall(id)
   },

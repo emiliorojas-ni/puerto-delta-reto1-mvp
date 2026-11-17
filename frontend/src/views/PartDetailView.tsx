@@ -162,11 +162,22 @@ export function PartDetailView({
   if (loading && !part) {
     return (
       <section aria-busy="true" aria-label={`Cargando parte #${partId}`}>
-        <div className="skeleton" style={{ height: 110, marginBottom: 18 }} />
-        <div className="evidence-grid">
-          {[1, 2, 3, 4].map((n) => (
-            <div key={n} className="skeleton" style={{ height: 170 }} />
-          ))}
+        <div className="view-hero" style={{ background: 'var(--brand-deep)' }}>
+          <div className="view-hero-gradient" />
+          <div className="view-hero-content">
+            <div>
+              <div className="view-hero-eyebrow">Parte #{partId}</div>
+              <h1 className="view-hero-title">Cargando ficha de parte…</h1>
+            </div>
+          </div>
+        </div>
+        <div className="page-content">
+          <div className="skeleton" style={{ height: 110, marginBottom: 18 }} />
+          <div className="evidence-grid">
+            {[1, 2, 3, 4].map((n) => (
+              <div key={n} className="skeleton" style={{ height: 170 }} />
+            ))}
+          </div>
         </div>
       </section>
     )
@@ -174,18 +185,24 @@ export function PartDetailView({
 
   if (loadError && !part) {
     return (
-      <section className="glass-card" role="alert">
-        <h1 className="page-title">No se pudo cargar el parte #{partId}</h1>
-        <p className="page-subtitle" style={{ marginBottom: 16 }}>
-          {loadError}
-        </p>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button id="part-back-error-btn" type="button" className="btn" onClick={onBack}>
-            ← Volver
-          </button>
-          <button id="part-retry-btn" type="button" className="btn btn-primary" onClick={() => void fetchPart(false)}>
-            Reintentar
-          </button>
+      <section role="alert">
+        <div className="view-hero" style={{ background: 'var(--brand-deep)' }}>
+          <div className="view-hero-gradient" />
+          <div className="view-hero-content">
+            <div>
+              <div className="view-hero-eyebrow">Error · Parte #{partId}</div>
+              <h1 className="view-hero-title">No se pudo cargar la ficha</h1>
+            </div>
+          </div>
+        </div>
+        <div className="page-content">
+          <div className="glass-card">
+            <p style={{ marginBottom: 16, color: 'var(--t2)' }}>{loadError}</p>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button id="part-back-error-btn" type="button" className="btn" onClick={onBack}>← Volver</button>
+              <button id="part-retry-btn" type="button" className="btn btn-primary" onClick={() => void fetchPart(false)}>Reintentar</button>
+            </div>
+          </div>
         </div>
       </section>
     )
@@ -197,57 +214,41 @@ export function PartDetailView({
 
   return (
     <div id="part-detail-view">
-      <div className="page-header">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
-            <button id="part-back-btn" type="button" className="btn btn-sm" onClick={onBack}>
-              ← Volver a partes
-            </button>
-            <span className="badge badge-neutral mono">{part.ref}</span>
-            <span className="badge badge-neutral mono">Versión v{part.version}</span>
-            <StatusBadge status={part.status} strength={part.strength} />
-            <DestinationBadge destination={part.destination} suggested={part.suggested} status={part.status} />
-            {(!online || staleOffline) && (
-              <span className="badge badge-unconfirmed">datos de la última conexión, no confirmados</span>
-            )}
+      <div className="view-hero">
+        <img className="view-hero-img" src="https://images.unsplash.com/photo-1596422572215-801e9c6beeaf?w=1400&q=80&fit=crop" alt="Operaciones portuarias" />
+        <div className="view-hero-gradient" />
+        <div className="view-hero-content">
+          <div>
+            <div className="view-hero-eyebrow">
+              Parte #{part.id} · <span className="mono">{part.ref}</span> · v{part.version}
+              {(!online || staleOffline) && <span className="badge badge-unconfirmed" style={{ marginLeft: 10 }}>datos de la última conexión</span>}
+            </div>
+            <h1 className="view-hero-title">{part.tarea} — {formatUSD(part.amount_usd)}</h1>
+            <p className="view-hero-sub">
+              <strong style={{ color: '#fff' }}>{part.fecha}</strong> · Turno <strong style={{ color: '#fff' }}>{part.turno}</strong>
+              {' '}(<span className="mono">{evidence.shift.start.slice(11)}–{evidence.shift.end.slice(11)}</span>)
+              {' · '}Cuadrilla <span className="mono">{part.cuadrilla}</span>
+              {' · '}{part.personas} personas · {formatQty(part.jornales)} jornales
+            </p>
+            <div style={{ display: 'flex', gap: 7, marginTop: 8, flexWrap: 'wrap' }}>
+              <StatusBadge status={part.status} strength={part.strength} />
+              <DestinationBadge destination={part.destination} suggested={part.suggested} status={part.status} />
+            </div>
           </div>
-          <h1 className="page-title">
-            Parte #{part.id} · {part.tarea}{' '}
-            <span style={{ color: 'var(--accent-teal)' }}>({formatUSD(part.amount_usd)})</span>
-          </h1>
-          <p className="page-subtitle">
-            Fecha <strong className="mono">{part.fecha}</strong> · Turno <strong className="mono">{part.turno}</strong> (
-            <span className="mono">
-              {evidence.shift.start.slice(11)}–{evidence.shift.end.slice(11)}
-            </span>
-            ) · Cuadrilla <strong className="mono">{part.cuadrilla}</strong> ·{' '}
-            <strong>{part.personas}</strong> personas · <strong>{formatQty(part.jornales)}</strong> jornales · Supervisor de origen:{' '}
-            <span className="mono">{part.supervisor}</span> (no acredita validación R12)
-          </p>
-        </div>
-
-        <div className="header-actions">
-          {part.destination && (
-            <button
-              id="part-goto-call-btn"
-              type="button"
-              className="btn btn-sm"
-              onClick={() => onNavigateCall(part.destination!)}
-            >
-              Ficha {part.destination} →
+          <div className="view-hero-actions">
+            <button id="part-back-btn" type="button" className="btn btn-sm" onClick={onBack}>← Volver a partes</button>
+            {part.destination && (
+              <button id="part-goto-call-btn" type="button" className="btn btn-sm" onClick={() => onNavigateCall(part.destination!)}>
+                Ficha {part.destination} →
+              </button>
+            )}
+            <button id="part-reload-top-btn" type="button" className="btn btn-sm" onClick={() => void fetchPart(true)} disabled={!online}>
+              Recargar
             </button>
-          )}
-          <button
-            id="part-reload-top-btn"
-            type="button"
-            className="btn btn-sm"
-            onClick={() => void fetchPart(true)}
-            disabled={!online}
-          >
-            Recargar parte
-          </button>
+          </div>
         </div>
       </div>
+      <div className="page-content">
 
       {/* Bloque Decisión actual y Alertas */}
       <section className="glass-card" style={{ marginBottom: 18 }} aria-labelledby="decision-block-heading">
@@ -314,7 +315,7 @@ export function PartDetailView({
             style={{
               padding: '10px 12px',
               borderRadius: 'var(--radius-sm)',
-              background: 'hsla(212, 52%, 7%, 0.75)',
+              background: 'var(--surface-muted)',
               border: '1px solid var(--border-subtle)',
               marginBottom: 10,
             }}
@@ -730,6 +731,7 @@ export function PartDetailView({
           </form>
         )}
       </section>
+      </div>
     </div>
   )
 }

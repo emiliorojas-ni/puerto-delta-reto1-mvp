@@ -28,6 +28,7 @@ from reto.api.serializers import (
 from reto.attribution.rules import DEST_SSGG
 from reto.costing.exports import export_batch_csv, export_batch_xlsx
 from reto.costing.services import compute_batch_summary, fmt_money
+from reto.costing.reporting import build_cost_breakdown
 from reto.imports.models import ImportBatch, PieceworkProduction, PortCall, WagePart
 from reto.reviews.services import ReviewError, submit_part_review
 
@@ -121,6 +122,38 @@ class SummaryView(NoStoreAPIView):
         return Response(compute_batch_summary(batch))
 
 
+class CallListView(NoStoreAPIView):
+    permission_classes = [IsAuthenticatedRead]
+
+    def get(self, request):
+        batches = (
+            ImportBatch.objects.prefetch_related("port_calls")
+            .filter(port_calls__isnull=False)
+            .distinct()
+            .order_by("-imported_at", "-id")
+        )
+        results = []
+        for batch in batches:
+            summary_by_id = {
+                item["id"]: item for item in compute_batch_summary(batch)["calls"]
+            }
+            for call in batch.port_calls.all():
+                item = summary_by_id[call.call_id]
+                results.append(
+                    {
+                        **item,
+                        "batch_id": batch.id,
+                        "batch_imported_at": batch.imported_at.strftime("%Y-%m-%dT%H:%M"),
+                        "is_current_batch": batch.is_active,
+                        "operational_status": (
+                            "activa" if batch.is_active else "finalizada"
+                        ),
+                    }
+                )
+        results.sort(key=lambda item: item["atraque"], reverse=True)
+        return Response({"results": results, "count": len(results)})
+
+
 class CallDetailView(NoStoreAPIView):
     permission_classes = [IsAuthenticatedRead]
 
@@ -194,6 +227,7 @@ class CallDetailView(NoStoreAPIView):
                 "parts": [serialize_part_summary(p) for p in confirmed_parts],
                 "suggested_parts": [serialize_part_summary(p) for p in suggested_parts],
                 "piecework": [serialize_piecework(pw) for pw in pieceworks],
+                "breakdown": [row for row in build_cost_breakdown(batch) if row["destination"] == call_id],
                 "totals": {
                     "jornal_usd": fmt_money(jornal_usd),
                     "destajo_usd": fmt_money(destajo_usd),

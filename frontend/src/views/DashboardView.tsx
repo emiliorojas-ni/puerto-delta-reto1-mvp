@@ -27,22 +27,28 @@ export function DashboardView({
   if (loading && !summary) {
     return (
       <section aria-busy="true" aria-label="Cargando tablero de costos">
-        <div className="page-header">
-          <div>
-            <h1 className="page-title">Tablero de Costeo por Recalada</h1>
-            <p className="page-subtitle">Cargando resumen del lote y conciliación monetaria…</p>
+        <div className="view-hero" style={{ background: 'var(--brand-deep)' }}>
+          <div className="view-hero-gradient" />
+          <div className="view-hero-content">
+            <div>
+              <div className="view-hero-eyebrow">Sistema Logístico Integrado</div>
+              <h1 className="view-hero-title">Tablero de Costeo por Recalada</h1>
+              <p className="view-hero-sub">Cargando resumen del lote y conciliación monetaria…</p>
+            </div>
           </div>
         </div>
-        <div className="kpi-grid">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <div key={n} className="skeleton" style={{ height: 118 }} />
-          ))}
-        </div>
-        <div className="skeleton" style={{ height: 150, marginBottom: 20 }} />
-        <div className="calls-grid">
-          {[1, 2, 3].map((n) => (
-            <div key={n} className="skeleton" style={{ height: 240 }} />
-          ))}
+        <div className="page-content">
+          <div className="kpi-grid">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <div key={n} className="skeleton" style={{ height: 118, borderRadius: 0 }} />
+            ))}
+          </div>
+          <div className="skeleton" style={{ height: 150, margin: '20px 0' }} />
+          <div className="calls-grid">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="skeleton" style={{ height: 240 }} />
+            ))}
+          </div>
         </div>
       </section>
     )
@@ -50,24 +56,46 @@ export function DashboardView({
 
   if (error && !summary) {
     return (
-      <section className="glass-card" role="alert">
-        <h1 className="page-title">No se pudo cargar el tablero</h1>
-        <p className="page-subtitle" style={{ marginBottom: 16 }}>
-          {error}
-        </p>
-        <button id="dashboard-retry-btn" type="button" className="btn btn-primary" onClick={onRefresh}>
-          Reintentar carga
-        </button>
+      <section role="alert">
+        <div className="view-hero" style={{ background: 'var(--brand-deep)' }}>
+          <div className="view-hero-gradient" />
+          <div className="view-hero-content">
+            <div>
+              <div className="view-hero-eyebrow">Error del sistema</div>
+              <h1 className="view-hero-title">No se pudo cargar el tablero</h1>
+            </div>
+          </div>
+        </div>
+        <div className="page-content">
+          <div className="glass-card">
+            <p style={{ marginBottom: 16, color: 'var(--t2)' }}>{error}</p>
+            <button id="dashboard-retry-btn" type="button" className="btn btn-primary" onClick={onRefresh}>
+              Reintentar carga
+            </button>
+          </div>
+        </div>
       </section>
     )
   }
 
   if (!summary) {
     return (
-      <section className="glass-card">
-        <h1 className="page-title">Sin lote activo</h1>
-        <p className="page-subtitle">No se encontraron datos importados para el período.</p>
-      </section>
+      <div>
+        <div className="view-hero" style={{ background: 'var(--brand-deep)' }}>
+          <div className="view-hero-gradient" />
+          <div className="view-hero-content">
+            <div>
+              <div className="view-hero-eyebrow">Sistema Logístico Integrado</div>
+              <h1 className="view-hero-title">Sin lote activo</h1>
+            </div>
+          </div>
+        </div>
+        <div className="page-content">
+          <div className="glass-card">
+            <p style={{ color: 'var(--t2)' }}>No se encontraron datos importados para el período.</p>
+          </div>
+        </div>
+      </div>
     )
   }
 
@@ -81,21 +109,21 @@ export function DashboardView({
       label: `${c.id} (${c.nave})`,
       amount: c.total_usd,
       pct: Math.max(0, ratio(c.total_usd, totals.total_usd) * 100),
-      color: idx === 0 ? 'hsl(171, 77%, 52%)' : idx === 1 ? 'hsl(199, 90%, 56%)' : 'hsl(156, 72%, 46%)',
+      color: idx === 0 ? 'var(--brand-steel)' : idx === 1 ? 'var(--action)' : 'var(--accent-sky)',
     })),
     {
       id: 'REC-SSGG',
       label: 'REC-SSGG (Servicios generales)',
       amount: ssgg.jornal_usd,
       pct: Math.max(0, ratio(ssgg.jornal_usd, totals.total_usd) * 100),
-      color: 'hsl(258, 82%, 68%)',
+      color: 'var(--accent-violet)',
     },
     {
       id: 'PENDIENTE',
       label: 'Pendiente / Sugerido (sin confirmar)',
       amount: pending.jornal_usd,
       pct: Math.max(0, ratio(pending.jornal_usd, totals.total_usd) * 100),
-      color: 'hsl(40, 96%, 56%)',
+      color: 'var(--industrial-yellow)',
     },
   ]
 
@@ -106,39 +134,52 @@ export function DashboardView({
     }
   }
 
+  const CALL_PHOTOS = [
+    'https://images.unsplash.com/photo-1596422572215-801e9c6beeaf?w=640&q=80&fit=crop',
+    'https://images.unsplash.com/photo-1597334948330-38795f25d05d?w=640&q=80&fit=crop',
+    'https://images.unsplash.com/photo-1595263026408-d502567353ee?w=640&q=80&fit=crop',
+  ]
+
   return (
     <div id="dashboard-view">
-      <div className="page-header">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <h1 className="page-title">Tablero de Costeo por Recalada</h1>
-            {(!online || staleOffline) && (
-              <span className="badge badge-unconfirmed">datos de la última conexión, no confirmados</span>
-            )}
+      <div className="view-hero">
+        <img
+          className="view-hero-img"
+          src="https://images.unsplash.com/photo-1590497008432-598f04441de8?w=1400&q=80&fit=crop"
+          alt="Operaciones portuarias Puerto Delta"
+        />
+        <div className="view-hero-gradient" />
+        <div className="view-hero-content">
+          <div>
+            <div className="view-hero-eyebrow">
+              Sistema Logístico Integrado · Lote #{batch.id} · v{batch.results_version}
+              {(!online || staleOffline) && (
+                <span className="badge badge-unconfirmed">datos de la última conexión</span>
+              )}
+            </div>
+            <h1 className="view-hero-title">Tablero de Costeo por Recalada</h1>
+            <p className="view-hero-sub">
+              SHA-256 <span className="mono">{shaShort}…</span>
+              {' · '}{batch.source_rows} filas fuente
+              {' · '}Tarifa jornal {formatUSD(rate_jornal_usd)}
+            </p>
           </div>
-          <p className="page-subtitle">
-            Lote <span className="mono">#{batch.id}</span> · Versión de resultados{' '}
-            <span className="mono">v{batch.results_version}</span> · SHA-256{' '}
-            <code className="mono" title={batch.sha256}>
-              {shaShort}…
-            </code>{' '}
-            · {batch.source_rows} filas fuente · Tarifa jornal {formatUSD(rate_jornal_usd)}
-          </p>
-        </div>
-        <div className="header-actions">
-          <ExportBar idPrefix="dashboard-export" />
-          <button
-            id="dashboard-refresh-btn"
-            type="button"
-            className="btn btn-sm"
-            onClick={onRefresh}
-            disabled={!online}
-            title={!online ? 'Sin conexión para actualizar' : 'Actualizar datos del servidor'}
-          >
-            Actualizar
-          </button>
+          <div className="view-hero-actions">
+            <ExportBar idPrefix="dashboard-export" />
+            <button
+              id="dashboard-refresh-btn"
+              type="button"
+              className="btn btn-sm"
+              onClick={onRefresh}
+              disabled={!online}
+              title={!online ? 'Sin conexión para actualizar' : 'Actualizar datos del servidor'}
+            >
+              Actualizar
+            </button>
+          </div>
         </div>
       </div>
+      <div className="page-content">
 
       {error && (
         <div className="alert-banner warning" role="alert">
@@ -147,8 +188,15 @@ export function DashboardView({
       )}
 
       {/* KPI Cards */}
-      <section className="kpi-grid" aria-label="Indicadores clave del período">
-        <article className="glass-card kpi-card" style={{ ['--kpi-accent' as string]: 'var(--accent-teal)' }}>
+      <section aria-label="Indicadores clave del período" style={{ marginBottom: 24 }}>
+        <div className="section-header">
+          <div className="section-header-left">
+            <div className="section-title">Indicadores del Período</div>
+            <div className="section-sub">10 – 12 de junio de 2026 · {totals.lines} líneas de costo · {totals.jornal_lines} partes de jornal</div>
+          </div>
+        </div>
+        <div className="kpi-grid">
+        <article className="kpi-card" style={{ ['--kpi-accent' as string]: 'var(--accent-teal)' }}>
           <span className="kpi-label">Total Período</span>
           <span className="kpi-value">{formatUSD(totals.total_usd)}</span>
           <div className="kpi-meta">
@@ -159,7 +207,7 @@ export function DashboardView({
           </div>
         </article>
 
-        <article className="glass-card kpi-card" style={{ ['--kpi-accent' as string]: 'var(--accent-sky)' }}>
+        <article className="kpi-card" style={{ ['--kpi-accent' as string]: 'var(--accent-sky)' }}>
           <span className="kpi-label">Jornal Total</span>
           <span className="kpi-value">{formatUSD(totals.jornal_usd)}</span>
           <div className="kpi-meta">
@@ -168,7 +216,7 @@ export function DashboardView({
           </div>
         </article>
 
-        <article className="glass-card kpi-card" style={{ ['--kpi-accent' as string]: 'var(--accent-emerald)' }}>
+        <article className="kpi-card" style={{ ['--kpi-accent' as string]: 'var(--accent-emerald)' }}>
           <span className="kpi-label">Destajo Total</span>
           <span className="kpi-value">{formatUSD(totals.destajo_usd)}</span>
           <div className="kpi-meta">
@@ -179,7 +227,7 @@ export function DashboardView({
 
         <article
           id="kpi-ssgg-card"
-          className="glass-card kpi-card interactive"
+          className="kpi-card interactive"
           style={{ ['--kpi-accent' as string]: 'var(--accent-violet)' }}
           tabIndex={0}
           role="button"
@@ -199,7 +247,7 @@ export function DashboardView({
 
         <article
           id="kpi-pending-card"
-          className="glass-card kpi-card interactive"
+          className="kpi-card interactive"
           style={{ ['--kpi-accent' as string]: 'var(--accent-amber)' }}
           tabIndex={0}
           role="button"
@@ -216,6 +264,7 @@ export function DashboardView({
             <span style={{ color: 'var(--accent-amber)' }}>Revisar →</span>
           </div>
         </article>
+        </div>
       </section>
 
       {/* Control Monetario y Barra Apilada */}
@@ -223,16 +272,12 @@ export function DashboardView({
         className={`glass-card control-panel ${control.ok ? '' : 'control-alert'}`}
         aria-labelledby="control-heading"
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-          <div>
-            <h2 id="control-heading" style={{ margin: 0, fontSize: '1.12rem', fontFamily: 'var(--font-display)' }}>
-              Control Monetario del Período (R10 · R11)
-            </h2>
-            <p className="field-hint" style={{ margin: '2px 0 0' }}>
-              El importe de partes sugeridos y pendientes se contabiliza en el control global sin inflar los subtotales confirmados por recalada.
-            </p>
+        <div className="section-header" style={{ padding: 0, marginBottom: 10, borderBottom: 'none' }}>
+          <div className="section-header-left">
+            <div id="control-heading" className="section-title">Control Monetario del Período (R10 · R11)</div>
+            <div className="section-sub">Sugeridos y pendientes se contabilizan en el control global sin inflar los subtotales confirmados por recalada</div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <div className="section-actions">
             {control.ok ? (
               <span className="badge badge-validado">Control OK · Cuadrado ({formatUSD(control.expected_usd)})</span>
             ) : (
@@ -315,78 +360,67 @@ export function DashboardView({
 
       {/* Tarjetas por Recalada */}
       <section aria-labelledby="calls-cards-heading" style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <h2 id="calls-cards-heading" style={{ margin: 0, fontSize: '1.18rem', fontFamily: 'var(--font-display)' }}>
-            Recaladas Operativas del Lote
-          </h2>
-          <button
-            id="dashboard-all-parts-btn"
-            type="button"
-            className="btn btn-sm"
-            onClick={() => onNavigateParts({})}
-          >
-            Explorar los {totals.jornal_lines} partes de jornal →
-          </button>
+        <div className="section-header">
+          <div className="section-header-left">
+            <div id="calls-cards-heading" className="section-title">Recaladas Operativas del Lote</div>
+            <div className="section-sub">Haz clic en una recalada para ver el detalle de partes, destajo y ventana de operación</div>
+          </div>
+          <div className="section-actions">
+            <button
+              id="dashboard-all-parts-btn"
+              type="button"
+              className="btn btn-sm"
+              onClick={() => onNavigateParts({})}
+            >
+              Explorar los {totals.jornal_lines} partes de jornal →
+            </button>
+          </div>
         </div>
 
         <div className="calls-grid">
-          {calls.map((c) => {
+          {calls.map((c, idx) => {
             const scenarioTotal = addMoney(c.total_usd, c.suggested_usd)
             return (
               <article
                 key={c.id}
                 id={`call-card-${c.id}`}
-                className="glass-card interactive"
+                className="call-card"
                 tabIndex={0}
                 role="button"
                 aria-label={`Abrir ficha de recalada ${c.id} ${c.nave}, total confirmado ${formatUSD(c.total_usd)}`}
                 onClick={() => onNavigateCall(c.id)}
                 onKeyDown={(e) => onRowKey(e, () => onNavigateCall(c.id))}
               >
-                <div className="call-card-header">
-                  <div>
-                    <div className="call-id">{c.id}</div>
-                    <h3 className="call-ship">{c.nave}</h3>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                      {c.cliente} · {c.muelle}
+                <div className="call-card-banner">
+                  <img src={CALL_PHOTOS[idx % CALL_PHOTOS.length]} alt={`Puerto Delta ${c.id}`} loading="lazy" />
+                  <div className="call-card-banner-overlay">
+                    <div>
+                      <div className="call-card-id">{c.id}</div>
+                      <div className="call-card-ship">{c.nave}</div>
+                      <div className="call-card-meta">{c.muelle} · {c.tipo_carga}</div>
                     </div>
-                  </div>
-                  <span className="badge badge-confirmado mono">{formatUSD(c.total_usd)}</span>
-                </div>
-
-                <div style={{ fontSize: '0.79rem', color: 'var(--text-muted)', marginBottom: 8 }}>
-                  <div>Carga: {c.tipo_carga}</div>
-                  <div className="mono" style={{ marginTop: 2 }}>
-                    Ventana: {c.atraque.replace('T', ' ')} → {c.desatraque.replace('T', ' ')}
+                    <span className="badge badge-confirmado mono">{formatUSD(c.total_usd)}</span>
                   </div>
                 </div>
-
+                <div className="call-card-body">
                 <div className="call-breakdown">
-                  <div>
-                    <div className="control-metric-label">Jornal confirmado</div>
-                    <div className="mono" style={{ fontWeight: 600, marginTop: 2 }}>
-                      {formatUSD(c.jornal_usd)}
+                    <div className="call-stat">
+                      <div className="call-stat-label">Jornal conf.</div>
+                      <div className="call-stat-value mono">{formatUSD(c.jornal_usd)}</div>
+                      <div className="field-hint">{formatQty(c.jornales)} j. · {c.parts} partes</div>
                     </div>
-                    <div className="field-hint">
-                      {formatQty(c.jornales)} jornales ({c.parts} partes)
+                    <div className="call-stat">
+                      <div className="call-stat-label">Destajo</div>
+                      <div className="call-stat-value mono">{formatUSD(c.destajo_usd)}</div>
+                      <div className="field-hint">{c.piecework_lines} prod.</div>
                     </div>
                   </div>
-                  <div>
-                    <div className="control-metric-label">Destajo</div>
-                    <div className="mono" style={{ fontWeight: 600, marginTop: 2 }}>
-                      {formatUSD(c.destajo_usd)}
+                  <div className="suggested-scenario-box">
+                    <div className="suggested-scenario-tag">Escenario con sugeridos · no confirmado</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                      <span>+{formatQty(c.suggested_jornales)} j. ({formatUSD(c.suggested_usd)})</span>
+                      <strong className="mono">{formatUSD(scenarioTotal)}</strong>
                     </div>
-                    <div className="field-hint">{c.piecework_lines} líneas prod.</div>
-                  </div>
-                </div>
-
-                <div className="suggested-scenario-box">
-                  <div className="suggested-scenario-tag">escenario con sugeridos, no confirmado</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-                    <span>
-                      +{formatQty(c.suggested_jornales)} j. sugeridos ({formatUSD(c.suggested_usd)})
-                    </span>
-                    <strong className="mono"> Hipotético: {formatUSD(scenarioTotal)}</strong>
                   </div>
                 </div>
               </article>
@@ -396,21 +430,16 @@ export function DashboardView({
       </section>
 
       {/* Tabla comparativa de Recaladas + REC-SSGG + Pendiente */}
-      <section className="glass-card" aria-labelledby="calls-table-heading">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
-          <div>
-            <h2 id="calls-table-heading" style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-display)' }}>
-              Cuadro Consolidado por Destino y Estado
-            </h2>
-            <p className="field-hint" style={{ margin: '2px 0 0' }}>
-              Haz clic o presiona Enter en cualquier fila para abrir el detalle de la recalada o de los partes pendientes.
-            </p>
+      <section className="glass-card" aria-labelledby="calls-table-heading" style={{ marginBottom: 0 }}>
+        <div className="section-header" style={{ padding: 0, marginBottom: 14, borderBottom: 'none' }}>
+          <div className="section-header-left">
+            <div id="calls-table-heading" className="section-title">Cuadro Consolidado por Destino y Estado</div>
+            <div className="section-sub">Haz clic o presiona Enter en cualquier fila para abrir el detalle</div>
           </div>
-          <span className="badge badge-unconfirmed">
-            Columna sugeridos = escenario con sugeridos, no confirmado
-          </span>
+          <div className="section-actions">
+            <span className="badge badge-unconfirmed">sugeridos = escenario no confirmado</span>
+          </div>
         </div>
-
         <div className="table-wrap">
           <table className="data-table" aria-label="Resumen de costos por recalada">
             <thead>
@@ -520,7 +549,7 @@ export function DashboardView({
               </tr>
             </tbody>
             <tfoot>
-              <tr style={{ background: 'hsla(210, 48%, 10%, 0.9)', fontWeight: 700 }}>
+              <tr style={{ background: 'var(--brand-steel-soft)', fontWeight: 700 }}>
                 <td colSpan={3}>TOTAL CONTROL DEL PERÍODO ({totals.lines} líneas)</td>
                 <td className="right mono">{formatQty(totals.jornales)} j.</td>
                 <td className="right mono">{formatUSD(totals.jornal_usd)}</td>
@@ -534,6 +563,7 @@ export function DashboardView({
           </table>
         </div>
       </section>
+      </div>
     </div>
   )
 }

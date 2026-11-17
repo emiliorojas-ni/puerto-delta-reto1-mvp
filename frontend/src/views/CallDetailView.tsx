@@ -52,27 +52,44 @@ export function CallDetailView({
   if (loading && !detail) {
     return (
       <section aria-busy="true" aria-label={`Cargando ficha de recalada ${callId}`}>
-        <div className="skeleton" style={{ height: 110, marginBottom: 18 }} />
-        <div className="skeleton" style={{ height: 240, marginBottom: 18 }} />
-        <div className="skeleton" style={{ height: 200 }} />
+        <div className="view-hero" style={{ background: 'var(--brand-deep)' }}>
+          <div className="view-hero-gradient" />
+          <div className="view-hero-content">
+            <div>
+              <div className="view-hero-eyebrow">Recalada {callId}</div>
+              <h1 className="view-hero-title">Cargando ficha de recalada…</h1>
+            </div>
+          </div>
+        </div>
+        <div className="page-content">
+          <div className="skeleton" style={{ height: 110, marginBottom: 18 }} />
+          <div className="skeleton" style={{ height: 240, marginBottom: 18 }} />
+          <div className="skeleton" style={{ height: 200 }} />
+        </div>
       </section>
     )
   }
 
   if (error && !detail) {
     return (
-      <section className="glass-card" role="alert">
-        <h1 className="page-title">No se pudo cargar la recalada {callId}</h1>
-        <p className="page-subtitle" style={{ marginBottom: 16 }}>
-          {error}
-        </p>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button id="call-back-error-btn" type="button" className="btn" onClick={onBack}>
-            ← Volver al tablero
-          </button>
-          <button id="call-retry-btn" type="button" className="btn btn-primary" onClick={() => void loadCall()}>
-            Reintentar
-          </button>
+      <section role="alert">
+        <div className="view-hero" style={{ background: 'var(--brand-deep)' }}>
+          <div className="view-hero-gradient" />
+          <div className="view-hero-content">
+            <div>
+              <div className="view-hero-eyebrow">Error · Recalada {callId}</div>
+              <h1 className="view-hero-title">No se pudo cargar la ficha</h1>
+            </div>
+          </div>
+        </div>
+        <div className="page-content">
+          <div className="glass-card">
+            <p style={{ marginBottom: 16, color: 'var(--t2)' }}>{error}</p>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button id="call-back-error-btn" type="button" className="btn" onClick={onBack}>← Volver al tablero</button>
+              <button id="call-retry-btn" type="button" className="btn btn-primary" onClick={() => void loadCall()}>Reintentar</button>
+            </div>
+          </div>
         </div>
       </section>
     )
@@ -85,39 +102,26 @@ export function CallDetailView({
 
   return (
     <div id="call-detail-view">
-      <div className="page-header">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>
-            <button id="call-back-btn" type="button" className="btn btn-sm" onClick={onBack}>
-              ← Tablero
-            </button>
-            <span className="badge badge-confirmado mono">{call.id}</span>
-            {(!online || staleOffline) && (
-              <span className="badge badge-unconfirmed">datos de la última conexión, no confirmados</span>
-            )}
+      <div className="view-hero">
+        <img className="view-hero-img" src="https://images.unsplash.com/photo-1670121180530-cfcba4438038?w=1400&q=80&fit=crop" alt={`Puerto Delta ${call.id}`} />
+        <div className="view-hero-gradient" />
+        <div className="view-hero-content">
+          <div>
+            <div className="view-hero-eyebrow">
+              Ficha de Recalada &middot; {call.id}
+              {(!online || staleOffline) && <span className="badge badge-unconfirmed" style={{ marginLeft: 10 }}>datos de la última conexión</span>}
+            </div>
+            <h1 className="view-hero-title">{call.nave}</h1>
+            <p className="view-hero-sub">{call.muelle} &middot; Cliente: <strong style={{ color: '#fff' }}>{call.cliente}</strong> &middot; {call.tipo_carga} &middot; <span className="mono">{call.atraque?.replace('T', ' ') ?? 'No aplica'} → {call.desatraque?.replace('T', ' ') ?? 'No aplica'}</span></p>
           </div>
-          <h1 className="page-title">
-            {call.nave} <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>· {call.muelle}</span>
-          </h1>
-          <p className="page-subtitle">
-            Cliente: <strong>{call.cliente}</strong> · Carga: {call.tipo_carga} · Ventana:{' '}
-            <span className="mono">
-              {call.atraque.replace('T', ' ')} → {call.desatraque.replace('T', ' ')}
-            </span>
-          </p>
-        </div>
-        <div className="header-actions">
-          <ExportBar idPrefix="call-export" />
-          <button
-            id="call-filter-all-parts-btn"
-            type="button"
-            className="btn btn-sm"
-            onClick={() => onFilterParts({ call: call.id })}
-          >
-            Ver en buscador de partes
-          </button>
+          <div className="view-hero-actions">
+            <button id="call-back-btn" type="button" className="btn btn-sm" onClick={onBack}>← Tablero</button>
+            <ExportBar idPrefix="call-export" />
+            <button id="call-filter-all-parts-btn" type="button" className="btn btn-sm" onClick={() => onFilterParts({ call: call.id })}>Ver en partes</button>
+          </div>
         </div>
       </div>
+      <div className="page-content">
 
       {/* Totales de la Recalada */}
       <section className="kpi-grid" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }} aria-label="Totales de la recalada">
@@ -161,6 +165,29 @@ export function CallDetailView({
         </article>
       </section>
 
+      {detail.breakdown && (
+        <section className="glass-card" style={{ marginBottom: 20 }} aria-labelledby="breakdown-heading">
+          <h2 id="breakdown-heading">Desglose por fecha, turno y cuadrilla</h2>
+          <p className="field-hint">Los trabajadores listados fueron convocados. Los partes indican cuántas personas participaron, sin identificar a cada ejecutor ni su pago individual.</p>
+          <div className="table-wrap">
+            <table className="data-table" aria-label="Cálculo detallado por cuadrilla">
+              <thead><tr><th>Fecha / turno</th><th>Cuadrilla / convocados</th><th>Jornales × tarifa</th><th>Jornal USD</th><th>Toneladas × tarifa / concepto</th><th>Destajo USD</th><th>Total USD</th></tr></thead>
+              <tbody>{detail.breakdown.map(row => (
+                <tr key={`${row.fecha}-${row.turno}-${row.cuadrilla}`}>
+                  <td>{row.fecha} · {row.turno}</td>
+                  <td>{row.cuadrilla}<div className="field-hint">{row.workers_called.join(', ') || 'Sin nombrada'}</div></td>
+                  <td>{row.jornal_details.map(line => <div key={line.ref}>{line.tarea} · {formatQty(line.jornales)} × {formatUSD(line.tarifa_usd)} = {formatUSD(line.amount_usd)}<div className="field-hint">{line.personas} participantes · {line.ref}</div></div>)}<strong>{formatQty(row.jornales)} jornales</strong></td>
+                  <td>{formatUSD(row.jornal_usd)}</td>
+                  <td>{row.destajo_details.map(line => <div key={line.ref}>{line.concepto} · {formatQty(line.toneladas)} t × {formatUSD(line.tarifa_usd)} = {formatUSD(line.amount_usd)}<div className="field-hint">{line.personas} participantes · {line.ref}</div></div>)}</td>
+                  <td>{formatUSD(row.destajo_usd)}</td>
+                  <td>{formatUSD(row.total_usd)}</td>
+                </tr>
+              ))}</tbody>
+              <tfoot><tr><td colSpan={6}>Total {call.id}</td><td>{formatUSD(totals.total_usd)}</td></tr></tfoot>
+            </table>
+          </div>
+        </section>
+      )}
       {/* Tabla 1: Partes Confirmados y Validados */}
       <section className="glass-card" style={{ marginBottom: 20 }} aria-labelledby="confirmed-parts-heading">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
@@ -258,7 +285,7 @@ export function CallDetailView({
       {/* Tabla 2: Partes Sugeridos (separados, etiquetados) */}
       <section
         className="glass-card"
-        style={{ marginBottom: 20, borderColor: 'hsla(40, 96%, 58%, 0.38)' }}
+        style={{ marginBottom: 20, borderColor: 'var(--industrial-yellow)' }}
         aria-labelledby="suggested-parts-heading"
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
@@ -392,7 +419,7 @@ export function CallDetailView({
                 ))}
               </tbody>
               <tfoot>
-                <tr style={{ background: 'hsla(210, 48%, 10%, 0.9)', fontWeight: 700 }}>
+                <tr style={{ background: 'var(--brand-steel-soft)', fontWeight: 700 }}>
                   <td colSpan={7}>TOTAL CONFIRMADO {call.id} (Jornal {formatUSD(totals.jornal_usd)} + Destajo {formatUSD(totals.destajo_usd)})</td>
                   <td className="right mono" style={{ color: 'var(--accent-teal)' }}>
                     {formatUSD(totals.total_usd)}
@@ -403,6 +430,7 @@ export function CallDetailView({
           </div>
         )}
       </section>
+      </div>
     </div>
   )
 }

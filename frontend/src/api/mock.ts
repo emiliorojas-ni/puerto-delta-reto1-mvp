@@ -9,6 +9,7 @@ import type {
   Alert,
   Api,
   CallDetail,
+  CallHistoryItem,
   CallId,
   CallSummary,
   Evidence,
@@ -62,6 +63,49 @@ const CALLS: CallInfo[] = [
     tipo_carga: 'Bolas de acero y granel mineral', muelle: 'Muelle 3',
     atraque: '2026-06-11T05:00', desatraque: '2026-06-12T23:40',
     aliases: ['altiplano star', 'altiplano'], muelleTerms: ['muelle 3', 'm3'],
+  },
+]
+
+const PREVIOUS_CALLS: CallHistoryItem[] = [
+  {
+    id: 'REC-2046', nave: 'MV SOUTHERN CROSS', cliente: 'Minerales del Pacífico',
+    tipo_carga: 'Concentrado mineral', muelle: 'Muelle 2',
+    atraque: '2026-05-02T06:20', desatraque: '2026-05-04T18:45',
+    jornales: '96', jornal_usd: '7805.76', destajo_usd: '11240.00', total_usd: '19045.76',
+    suggested_jornales: '0', suggested_usd: '0.00', parts: 28, piecework_lines: 14,
+    batch_id: 4, batch_imported_at: '2026-05-05T09:12', is_current_batch: false, operational_status: 'finalizada',
+  },
+  {
+    id: 'REC-2047', nave: 'MN ANDES TRADER', cliente: 'Aceros del Sur',
+    tipo_carga: 'Bobinas de acero', muelle: 'Muelle 1',
+    atraque: '2026-05-11T14:10', desatraque: '2026-05-13T08:30',
+    jornales: '72', jornal_usd: '5854.32', destajo_usd: '8960.50', total_usd: '14814.82',
+    suggested_jornales: '0', suggested_usd: '0.00', parts: 21, piecework_lines: 11,
+    batch_id: 5, batch_imported_at: '2026-05-14T08:40', is_current_batch: false, operational_status: 'finalizada',
+  },
+  {
+    id: 'REC-2048', nave: 'MV BLUE HORIZON', cliente: 'Logística Costera',
+    tipo_carga: 'Carga general', muelle: 'Muelle 3',
+    atraque: '2026-05-19T09:00', desatraque: '2026-05-21T21:15',
+    jornales: '84', jornal_usd: '6829.04', destajo_usd: '7345.80', total_usd: '14174.84',
+    suggested_jornales: '0', suggested_usd: '0.00', parts: 24, piecework_lines: 9,
+    batch_id: 6, batch_imported_at: '2026-05-22T07:55', is_current_batch: false, operational_status: 'finalizada',
+  },
+  {
+    id: 'REC-2049', nave: 'MV CORDILLERA', cliente: 'Graneles Andinos',
+    tipo_carga: 'Granel mineral', muelle: 'Muelle 2',
+    atraque: '2026-05-27T03:40', desatraque: '2026-05-29T16:20',
+    jornales: '102', jornal_usd: '8293.62', destajo_usd: '12480.25', total_usd: '20773.87',
+    suggested_jornales: '0', suggested_usd: '0.00', parts: 30, piecework_lines: 16,
+    batch_id: 7, batch_imported_at: '2026-05-30T10:05', is_current_batch: false, operational_status: 'finalizada',
+  },
+  {
+    id: 'REC-2050', nave: 'MV OCEAN CREST', cliente: 'Terminales Integrados',
+    tipo_carga: 'Maquinaria industrial', muelle: 'Muelle 1',
+    atraque: '2026-06-03T11:30', desatraque: '2026-06-05T19:50',
+    jornales: '78', jornal_usd: '6342.18', destajo_usd: '9215.40', total_usd: '15557.58',
+    suggested_jornales: '0', suggested_usd: '0.00', parts: 23, piecework_lines: 12,
+    batch_id: 8, batch_imported_at: '2026-06-06T08:25', is_current_batch: false, operational_status: 'finalizada',
   },
 ]
 
@@ -464,6 +508,21 @@ export class MockApi implements Api {
     return delay(() => {
       requireAuth()
       return buildSummary()
+    }, this.latencyMs)
+  }
+
+  listCalls() {
+    return delay(() => {
+      requireAuth()
+      const current: CallHistoryItem[] = CALLS.map((call) => ({
+        ...callSummary(call),
+        batch_id: 1,
+        batch_imported_at: '2026-11-17T10:02',
+        is_current_batch: true,
+        operational_status: 'activa',
+      }))
+      const results = [...current, ...PREVIOUS_CALLS].sort((a, b) => b.atraque.localeCompare(a.atraque))
+      return { results, count: results.length }
     }, this.latencyMs)
   }
 

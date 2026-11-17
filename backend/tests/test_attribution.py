@@ -62,7 +62,7 @@ class AttributionRulesTests(TestCase):
         self.assertEqual(r13.destination, "REC-2051")
         self.assertIn("JORNALES_GT_PERSONAS", [a["code"] for a in r13.alerts])
 
-        # Row 25: "ORION" -> REC-2051 confirmed despite empty planned front and no piecework
+        # User clarification: ORION prevails over an empty planned front.
         r25 = WagePart.objects.get(batch=self.batch, row_number=25)
         self.assertEqual(r25.status, WagePart.STATUS_CONFIRMADO)
         self.assertEqual(r25.destination, "REC-2051")

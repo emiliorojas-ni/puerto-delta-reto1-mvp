@@ -107,20 +107,24 @@ export function PartsListView({
 
   return (
     <div id="parts-list-view">
-      <div className="page-header">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <h1 className="page-title">Partes de Jornal y Revisión de Excepciones</h1>
-            {(!online || staleOffline) && (
-              <span className="badge badge-unconfirmed">datos de la última conexión, no confirmados</span>
-            )}
+      <div className="view-hero">
+        <img className="view-hero-img" src="https://images.unsplash.com/photo-1508404999913-79a3a2e75437?w=1400&q=80&fit=crop" alt="Operaciones portuarias Puerto Delta" />
+        <div className="view-hero-gradient" />
+        <div className="view-hero-content">
+          <div>
+            <div className="view-hero-eyebrow">
+              Auditoría y Control Operativo
+              {(!online || staleOffline) && <span className="badge badge-unconfirmed" style={{ marginLeft: 10 }}>datos de la última conexión</span>}
+            </div>
+            <h1 className="view-hero-title">Partes de Jornal y Revisión de Excepciones</h1>
+            <p className="view-hero-sub">Filtra por estado o recalada para auditar reglas, alertas y registrar validaciones</p>
           </div>
-          <p className="page-subtitle">
-            Filtra por estado (incluyendo «pendientes») o por recalada para auditar reglas, alertas y registrar validaciones.
-          </p>
+          <div className="view-hero-actions">
+            <ExportBar idPrefix="parts-export" />
+          </div>
         </div>
-        <ExportBar idPrefix="parts-export" />
       </div>
+      <div className="page-content">
 
       {/* Controles de filtrado */}
       <section className="glass-card" style={{ marginBottom: 18 }} aria-label="Filtros de partes">
@@ -317,6 +321,7 @@ export function PartsListView({
           </div>
         </section>
       )}
+      </div>
     </div>
   )
 }

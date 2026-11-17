@@ -50,20 +50,20 @@ function render(size) {
       const qx = Math.max(Math.abs(X - 256) - (256 - r), 0)
       const qy = Math.max(Math.abs(Y - 256) - (256 - r), 0)
       const inside = cov(Math.hypot(qx, qy) - r, 0) // 1 dentro, 0 fuera
-      let col = mix([14, 42, 68], [6, 18, 31], (X + Y) / 1024)
+      let col = mix([27, 54, 93], [16, 38, 65], (X + Y) / 1024)
       // Triángulo
       let d = Infinity
       for (let i = 0; i < 3; i++) {
         const [a, b] = [tri[i], tri[(i + 1) % 3]]
         d = Math.min(d, distSeg(X, Y, a[0], a[1], b[0], b[1]))
       }
-      col = mix(col, mix([94, 234, 212], [56, 189, 248], (X + Y) / 1024), cov(d * s, 17 * s))
+      col = mix(col, mix([255, 255, 255], [231, 237, 243], (X + Y) / 1024), cov(d * s, 17 * s))
       // Olas
       if (X >= 92 && X <= 420) {
         const w1 = 372 - 14 * Math.sin(((X - 104) / 76) * Math.PI)
-        col = mix(col, [251, 191, 36], cov(Math.abs(Y - w1) * s, 13 * s))
+        col = mix(col, [255, 195, 0], cov(Math.abs(Y - w1) * s, 13 * s))
         const w2 = 424 - 14 * Math.sin(((X - 104) / 76) * Math.PI)
-        col = mix(col, mix(col, [56, 189, 248], 0.55), cov(Math.abs(Y - w2) * s, 10 * s))
+        col = mix(col, [255, 107, 53], cov(Math.abs(Y - w2) * s, 10 * s))
       }
       const o = y * (size * 4 + 1) + 1 + x * 4
       raw[o] = Math.round(col[0]); raw[o + 1] = Math.round(col[1]); raw[o + 2] = Math.round(col[2])

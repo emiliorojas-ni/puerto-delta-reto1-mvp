@@ -7,7 +7,7 @@ import re
 import unicodedata
 from typing import Any
 
-RULE_VERSION = "1.0"
+RULE_VERSION = "1.2-peru"
 DEST_SSGG = "REC-SSGG"
 
 SSGG_TASKS = {
@@ -201,6 +201,28 @@ def evaluate_part_attribution(
     }
 
     norm_task = normalize_text(tarea)
+
+    # A recorded empty front is SSGG only without a note identifying a vessel.
+    # Missing call-up is different from a recorded call-up with an empty front.
+    if nombrada_refs and not obs_matches and (not planned_frentes or all(not normalize_text(f) for f in planned_frentes)):
+        return AttributionOutcome(
+            status="confirmado", destination=DEST_SSGG,
+            suggested_destination=None, strength=None,
+            rule_code="SSGG_FRENTE_VACIO", rule_version=RULE_VERSION,
+            reason="La nombrada tiene frente vacío y la observación no identifica una nave. Se clasifica como servicios generales según la aclaración del equipo (Perú.pdf).",
+            candidates=[DEST_SSGG], evidence=evidence, alerts=alerts,
+        )
+
+    # User clarification in Perú.pdf: warehouse work is general services.
+    if "almacen" in norm_task or any(normalize_text(f) == "almacen" for f in planned_frentes):
+        if norm_task not in SSGG_TASKS:
+            return AttributionOutcome(
+                status="confirmado", destination=DEST_SSGG,
+                suggested_destination=None, strength=None,
+                rule_code="SSGG_FRENTE_ALMACEN", rule_version=RULE_VERSION,
+                reason="Frente o tarea de almacén clasificado como servicios generales según la aclaración del equipo (Perú.pdf).",
+                candidates=[DEST_SSGG], evidence=evidence, alerts=alerts,
+            )
 
     # Step 1: Tipified SSGG tasks (R8)
     if norm_task in SSGG_TASKS:
