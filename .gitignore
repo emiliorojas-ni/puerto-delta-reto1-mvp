@@ -1,0 +1,48 @@
+# Python / Django
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local databases & runtime state
+*.sqlite3
+*.sqlite3-journal
+*.db
+backend/staticfiles/
+backend/media/
+
+# Secrets & environment
+.env
+.env.*
+!.env.example
+
+# Official challenge source data & local exports (NEVER commit)
+datos_csv/
+Material_oficial/
+*Datos_reto_equipos_final*.xlsx
+*Caso_de_estudio*.pdf
+*Case_study*.pdf
+*Rubrica_evaluacion*.pdf
+*Cronograma*.pdf
+exports_local/
+resultados_reto1_*.csv
+resultados_reto1_*.xlsx
+
+# Frontend build & deps
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

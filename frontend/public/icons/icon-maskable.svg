@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Puerto Delta">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e2a44"/>
+      <stop offset="1" stop-color="#06121f"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <g transform="translate(256 256) scale(.72) translate(-256 -256)">
+    <path d="M256 104 L376 320 H136 Z" fill="none" stroke="#5eead4" stroke-width="34" stroke-linejoin="round"/>
+    <path d="M104 372 q38 -28 76 0 t76 0 t76 0 t76 0" fill="none" stroke="#fbbf24" stroke-width="26" stroke-linecap="round"/>
+    <path d="M104 424 q38 -28 76 0 t76 0 t76 0 t76 0" fill="none" stroke="#38bdf8" stroke-opacity=".55" stroke-width="20" stroke-linecap="round"/>
+  </g>
+</svg>
