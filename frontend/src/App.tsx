@@ -346,31 +346,30 @@ export function App() {
         )}
 
         <section className="workspace">
-          <header className="utilitybar">
-            <div className="topbar-right">
-              <span
-                className={`badge ${online ? 'badge-validado' : 'badge-pendiente'}`}
-                title={online ? 'Conectado al origen' : 'Sin conexión de red'}
-              >
-                {online ? '● En línea' : '○ Sin conexión'}
-              </span>
-
-              <span className="badge badge-neutral mono" title="Modo del cliente API">
-                {api.mode === 'mock' ? 'MOCK v1' : 'API v1'}
-              </span>
-
-              {session.authenticated && session.user && (
-                <>
-                  <span className="badge badge-confirmado mono" title="Usuario y rol de sesión">
-                    {session.user.username} ({session.user.roles.join(',')})
-                  </span>
-                  <button id="logout-btn" type="button" className="btn btn-sm" onClick={() => void handleLogout()}>
-                    Salir
-                  </button>
-                </>
-              )}
-            </div>
-          </header>
+          {session.authenticated && session.user && (
+            <header className="utilitybar">
+              <div className="topbar-right">
+                <span className="utility-role" title="Rol de la sesión actual">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 3 20 6v5c0 5.1-3.4 8.5-8 10-4.6-1.5-8-4.9-8-10V6l8-3Z" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg>
+                  {session.user.roles.map((role) => role.charAt(0).toUpperCase() + role.slice(1)).join(' · ')}
+                </span>
+                <button
+                  id="logout-btn"
+                  type="button"
+                  className="utility-logout"
+                  onClick={() => void handleLogout()}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 5H5v14h5M14 8l4 4-4 4M8 12h10" />
+                  </svg>
+                  Salir
+                </button>
+              </div>
+            </header>
+          )}
 
           <main className="main-content">
         {authChecking ? (

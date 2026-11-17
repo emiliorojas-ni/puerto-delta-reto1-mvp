@@ -264,13 +264,42 @@ button, input, select, textarea { font-family: var(--fb); font-size: inherit; co
 .utilitybar {
   position: sticky; top: 0; z-index: 35;
   display: flex; align-items: center; justify-content: flex-end;
-  gap: 8px; padding: 0 26px; min-height: 52px;
+  gap: 8px; padding: 0 26px; min-height: 64px;
   background: rgba(255,255,255,.97);
   border-bottom: 1px solid var(--b1);
   backdrop-filter: blur(8px);
   box-shadow: 0 1px 0 var(--b1);
 }
-.topbar-right { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.utility-role {
+  display: inline-flex; align-items: center; gap: 9px;
+  min-height: 38px; padding: 7px 13px 7px 10px;
+  font-family: var(--fh); font-size: .84rem; font-weight: 700;
+  color: var(--brand); background: var(--brand-xlight);
+  border: 1px solid var(--b1); border-radius: 11px;
+}
+.utility-role svg {
+  width: 20px; height: 20px; padding: 3px;
+  fill: var(--brand-light); stroke: var(--brand); stroke-width: 1.8;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.utility-logout {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 38px; padding: 7px 14px;
+  font-family: var(--fh); font-size: .84rem; font-weight: 700;
+  color: #fff; background: var(--brand);
+  border: 1px solid var(--brand); border-radius: 11px;
+  box-shadow: 0 5px 14px rgba(27,54,93,.16);
+  cursor: pointer; transition: transform var(--tf), background var(--tf), box-shadow var(--tf);
+}
+.utility-logout:hover {
+  background: var(--brand-mid); transform: translateY(-1px);
+  box-shadow: 0 7px 18px rgba(27,54,93,.24);
+}
+.utility-logout svg {
+  width: 17px; height: 17px; fill: none; stroke: currentColor;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
 
 .main-content { flex: 1; padding: 0; }
 
@@ -706,6 +735,7 @@ button, input, select, textarea { font-family: var(--fb); font-size: inherit; co
   display: grid; grid-template-columns: 58% 42%;
   min-height: calc(100vh - 52px);
 }
+.auth-layout .login-split { min-height: 100vh; }
 .login-photo-panel {
   position: relative; overflow: hidden;
   display: flex; align-items: flex-end;
@@ -802,6 +832,7 @@ button, input, select, textarea { font-family: var(--fb); font-size: inherit; co
 
 .history-list { display: flex; flex-direction: column; gap: 12px; }
 .history-call-card {
+  --call-status-color: var(--brand);
   position: relative; display: grid;
   grid-template-columns: 76px minmax(0, 1fr) minmax(190px, auto);
   gap: 20px; align-items: stretch;
@@ -810,14 +841,23 @@ button, input, select, textarea { font-family: var(--fb); font-size: inherit; co
   box-shadow: 0 2px 10px rgba(16,38,65,.05);
   transition: transform var(--tf), border-color var(--tf), box-shadow var(--tf);
 }
+.history-call-card.status-pendiente { --call-status-color: var(--s-err); }
+.history-call-card.status-activa { --call-status-color: var(--s-ok); }
+.history-call-card.status-finalizada { --call-status-color: var(--s-info); }
 .history-call-card.is-current { cursor: pointer; }
 .history-call-card.is-current:hover {
   transform: translateY(-2px); border-color: var(--brand);
   box-shadow: 0 10px 28px rgba(16,38,65,.12);
 }
 .history-call-card.is-current::before {
-  content: ''; position: absolute; inset: 14px auto 14px 0;
-  width: 4px; border-radius: 0 4px 4px 0; background: var(--orange);
+  content: ''; position: absolute; left: 0; top: 24px; bottom: 24px;
+  width: 7px; border-radius: 0 8px 8px 0; background: var(--call-status-color);
+  box-shadow: 3px 0 12px color-mix(in srgb, var(--call-status-color) 24%, transparent);
+}
+.history-call-card:not(.is-current)::before {
+  content: ''; position: absolute; left: 0; top: 24px; bottom: 24px;
+  width: 7px; border-radius: 0 8px 8px 0; background: var(--call-status-color);
+  box-shadow: 3px 0 12px color-mix(in srgb, var(--call-status-color) 24%, transparent);
 }
 .history-call-date {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -848,6 +888,41 @@ button, input, select, textarea { font-family: var(--fb); font-size: inherit; co
   color: var(--orange); font-size: .76rem; font-style: normal; font-weight: 600; margin-top: 9px;
 }
 .history-call-card:not(.is-current) .history-call-cost em { color: var(--t3); }
+.call-status-badge {
+  background: color-mix(in srgb, var(--call-status-color) 12%, white);
+  border-color: color-mix(in srgb, var(--call-status-color) 42%, white);
+  color: color-mix(in srgb, var(--call-status-color) 82%, #102641);
+}
+.call-status-progress {
+  grid-column: 2;
+  width: min(100%, 520px);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px; padding: 11px 13px 9px;
+  margin-top: -2px;
+  background: var(--brand-xlight);
+  border: 1px solid var(--b1);
+  border-radius: 11px;
+}
+.call-status-step { display: flex; flex-direction: column; gap: 7px; }
+.call-status-step > span {
+  position: relative; display: block; height: 7px; border-radius: 999px;
+  background: #d9e0e8;
+  box-shadow: inset 0 1px 2px rgba(16,38,65,.08);
+}
+.call-status-step small {
+  font-family: var(--fh); color: var(--t3);
+  font-size: .72rem; font-weight: 700; letter-spacing: .045em;
+}
+.call-status-step.is-selected > span {
+  background: var(--call-status-color);
+  box-shadow: 0 3px 9px color-mix(in srgb, var(--call-status-color) 38%, transparent);
+}
+.call-status-step.is-selected > span::after {
+  content: ''; position: absolute; right: 3px; top: 50%;
+  width: 3px; height: 3px; border-radius: 50%;
+  background: rgba(255,255,255,.9); transform: translateY(-50%);
+}
+.call-status-step.is-selected small { color: var(--call-status-color); }
 .history-empty { text-align: center; padding: 54px 20px; }
 .history-empty h2 { font-family: var(--fh); color: var(--brand); font-size: 1.25rem; }
 .history-empty p { color: var(--t3); margin: 5px 0 18px; }
@@ -927,6 +1002,10 @@ button, input, select, textarea { font-family: var(--fb); font-size: inherit; co
   .history-call-cost {
     grid-column: 2; padding: 12px 0 0; border-left: 0; border-top: 1px solid var(--b1);
     align-items: flex-start;
+  }
+  .call-status-progress {
+    grid-column: 2; width: 100%; margin-top: 0;
+    padding: 10px; gap: 5px;
   }
   .history-call-window { gap: 12px 20px; }
 }

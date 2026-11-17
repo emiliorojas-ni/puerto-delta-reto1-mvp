@@ -51,7 +51,7 @@ export interface CallSummary {
   piecework_lines: number
 }
 
-export type CallOperationalStatus = 'activa' | 'finalizada'
+export type CallOperationalStatus = 'pendiente' | 'activa' | 'finalizada'
 
 export interface CallHistoryItem extends CallSummary {
   batch_id: number

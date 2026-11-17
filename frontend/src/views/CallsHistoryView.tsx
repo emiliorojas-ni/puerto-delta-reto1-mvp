@@ -76,6 +76,11 @@ export function CallsHistoryView({ online, staleOffline, onSelectCall }: CallsHi
 
   const activeCount = calls.filter((call) => call.operational_status === 'activa').length
   const completedCount = calls.filter((call) => call.operational_status === 'finalizada').length
+  const statusLabels = {
+    pendiente: 'Pendiente',
+    activa: 'Lote activo',
+    finalizada: 'Lote anterior',
+  } as const
   const clearFilters = () => {
     setSearch('')
     setStatus('')
@@ -144,6 +149,7 @@ export function CallsHistoryView({ online, staleOffline, onSelectCall }: CallsHi
               <label className="form-label" htmlFor="calls-status">Estado</label>
               <select id="calls-status" className="form-select" value={status} onChange={(event) => setStatus(event.target.value)}>
                 <option value="">Todos los estados</option>
+                <option value="pendiente">Pendientes</option>
                 <option value="activa">En lote activo</option>
                 <option value="finalizada">En lotes anteriores</option>
               </select>
@@ -190,7 +196,7 @@ export function CallsHistoryView({ online, staleOffline, onSelectCall }: CallsHi
               {filtered.map((call) => (
                 <article
                   key={`${call.batch_id}-${call.id}`}
-                  className={`history-call-card ${call.is_current_batch ? 'is-current' : ''}`}
+                  className={`history-call-card status-${call.operational_status} ${call.is_current_batch ? 'is-current' : ''}`}
                   tabIndex={call.is_current_batch ? 0 : undefined}
                   role={call.is_current_batch ? 'link' : undefined}
                   onClick={() => openCall(call)}
@@ -204,8 +210,8 @@ export function CallsHistoryView({ online, staleOffline, onSelectCall }: CallsHi
                   <div className="history-call-main">
                     <div className="history-call-topline">
                       <span className="call-card-id">{call.id}</span>
-                      <span className={`badge ${call.operational_status === 'activa' ? 'badge-validado' : 'badge-neutral'}`}>
-                        {call.operational_status === 'activa' ? 'Lote activo' : 'Lote anterior'}
+                      <span className={`badge call-status-badge status-${call.operational_status}`}>
+                        {statusLabels[call.operational_status]}
                       </span>
                     </div>
                     <h3>{call.nave}</h3>
@@ -221,6 +227,18 @@ export function CallsHistoryView({ online, staleOffline, onSelectCall }: CallsHi
                     <strong>{formatUSD(call.total_usd)}</strong>
                     <small>{formatQty(call.jornales)} jornales · {call.parts} partes</small>
                     {call.is_current_batch ? <em>Ver detalle</em> : <em>Lote #{call.batch_id}</em>}
+                  </div>
+                  <div className="call-status-progress" aria-label={`Estado del registro: ${statusLabels[call.operational_status]}`}>
+                    {(['pendiente', 'activa', 'finalizada'] as const).map((step) => (
+                      <div
+                        key={step}
+                        className={`call-status-step ${call.operational_status === step ? 'is-selected' : ''}`}
+                        aria-current={call.operational_status === step ? 'step' : undefined}
+                      >
+                        <span />
+                        <small>{statusLabels[step]}</small>
+                      </div>
+                    ))}
                   </div>
                 </article>
               ))}
